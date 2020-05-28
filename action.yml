@@ -1,5 +1,8 @@
 name: Deploy Deno to Azure App Service
 description: Publish a Deno 🦕 web app to Azure App Service on Linux
+branding:
+  icon: arrow-up-circle
+  color: blue
 inputs:
   app-name:
     description: Name of the Azure Web App
