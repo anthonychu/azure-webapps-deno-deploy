@@ -863,7 +863,7 @@ async function main() {
       silent: false
     };
   
-    const exitCode = await exec.exec('az', [...args, , '-o', 'json'], options);
+    const exitCode = await exec.exec('az', [...args, '-o', 'json'], options);
   
     return {
       exitCode,
