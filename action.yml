@@ -1,0 +1,15 @@
+name: Azure Web Apps Deno Deployment
+description: Deploy a Deno app to Azure Web Apps (Linux)
+inputs:
+  app-name:
+    description: Name of the Azure Web App
+    required: true
+  resource-group:
+    description: Name of the resource group
+    required: true
+  package:
+    description: Path to zip package
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

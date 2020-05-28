@@ -1,0 +1,16 @@
+{
+  "name": "azure-webapps-deno-deploy",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Anthony Chu",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/exec": "^1.0.4",
+    "@actions/github": "^2.2.0"
+  }
+}
