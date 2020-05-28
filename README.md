@@ -2,6 +2,8 @@
 
 This action deploys a Deno app to Azure Web Apps.
 
+> **Note:** Works with Web Apps for Linux. Create a web app with the default NGINX container and deploy to it.
+
 ## Inputs
 
 ### `app-name`
