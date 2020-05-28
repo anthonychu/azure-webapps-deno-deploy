@@ -42,6 +42,7 @@ jobs:
     steps:
     
     - uses: actions/checkout@v2
+
     - uses: azure/login@v1.1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -65,6 +66,12 @@ jobs:
         script-file: server.bundle.js
         deno-version: "1.0.2"
 ```
+
+## How it works
+
+This action configures an Azure Web App for Linux to use a custom runtime image ([anthonychu/azure-webapps-deno](https://hub.docker.com/r/anthonychu/azure-webapps-deno)) and deploys your code using [Run From Package](https://docs.microsoft.com/azure/azure-functions/run-functions-from-deployment-package).
+
+It calls the Azure CLI. Ensure your workflow first calls `azure/login`.
 
 ---
 
