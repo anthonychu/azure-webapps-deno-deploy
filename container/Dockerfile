@@ -24,5 +24,7 @@ EXPOSE 80
 
 WORKDIR /home/site/wwwroot
 COPY . /opt/defaultsite
+RUN chmod +x /opt/defaultsite/startup.sh
 
+ENTRYPOINT [ "/opt/defaultsite/startup.sh" ]
 CMD ["deno", "run", "-A", "/opt/defaultsite/server.ts"]
