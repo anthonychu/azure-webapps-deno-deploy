@@ -65,3 +65,7 @@ jobs:
         script-file: server.bundle.js
         deno-version: "1.0.2"
 ```
+
+---
+
+*Disclaimer: This is a community open source project. No official support is provided by Microsoft.*
