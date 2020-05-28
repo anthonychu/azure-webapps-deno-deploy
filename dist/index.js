@@ -803,7 +803,7 @@ const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const exec = __webpack_require__(986);
 
-const imageName = 'anthonychu/azure-webapps-deno';
+const imageName = 'anthonychu/azure-webapps-deno:latest';
 
 async function main() {
   try {
@@ -811,21 +811,38 @@ async function main() {
     const resourceGroup = core.getInput('resource-group');
     const package = core.getInput('package');
   
-    const { output: containerInfoJson } = await runAzCommand([ 'webapp', 'config', 'container', 'show', '-n', appName, '-g', resourceGroup, '-o', 'json' ]);
+    const { output: containerInfoJson } = await runAzCommand([ 'webapp', 'config', 'container', 'show', '-n', appName, '-g', resourceGroup ]);
     const containerInfo = JSON.parse(containerInfoJson);
 
     const webAppImageName = containerInfo.find(i => i.name === 'DOCKER_CUSTOM_IMAGE_NAME');
+    const webAppEnableStorage = containerInfo.find(s => s.name === 'WEBSITES_ENABLE_APP_SERVICE_STORAGE');
 
-    const { output: appSettingsJson } = await runAzCommand([ 'webapp', 'config', 'appsettings', 'list', '-n', appName, '-g', resourceGroup, '-o', 'json' ]);
+    const { output: appSettingsJson } = await runAzCommand([ 'webapp', 'config', 'appsettings', 'list', '-n', appName, '-g', resourceGroup ]);
     const appSettings = JSON.parse(appSettingsJson);
 
     const webAppRunFromPackage = appSettings.find(s => s.name === 'WEBSITE_RUN_FROM_PACKAGE');
-    const webAppEnableStorage = appSettings.find(s => s.name === 'WEBSITES_ENABLE_APP_SERVICE_STORAGE');
 
     console.log("image", webAppImageName);
     console.log("runfrompackage", webAppRunFromPackage);
-    console.log("enablestroage", webAppEnableStorage);
-  
+    console.log("enablestorage", webAppEnableStorage);
+
+    const hasCorrectImage = webAppImageName && webAppImageName.value === imageName;
+    const isAppServiceStorageEnabled = webAppEnableStorage && webAppEnableStorage === 'true';
+    if (!hasCorrectImage || !isAppServiceStorageEnabled) {
+      console.log('Configuring custom Deno runtime image...');
+      await runAzCommand([ 'webapp', 'config', 'config', 'set', '-n', appName, '-g', resourceGroup, '-i', imageName, '-r', 'https://index.docker.io', '-u', '', '-p', '', '-t', 'true' ]);
+      await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file="deno run -A --unstable server.bundle.js"' ]);
+    }
+
+    const isRunFromPackageEnabled = webAppRunFromPackage && webAppRunFromPackage.value === '1';
+    if (!isRunFromPackageEnabled) {
+      console.log('Configuring run from package...');
+      await runAzCommand([ 'webapp', 'config', 'appsettings', 'set', '-n', appName, '-g', resourceGroup, '--settings', 'WEBSITE_RUN_FROM_PACKAGE=1' ]);
+    }
+
+    console.log('Uploading package...')
+    await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
+    
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -842,10 +859,11 @@ async function main() {
         stderr: (data) => {
           error += data.toString();
         }
-      }
+      },
+      silent: false
     };
   
-    const exitCode = await exec.exec('az', args, options);
+    const exitCode = await exec.exec('az', [...args, , '-o', 'json'], options);
   
     return {
       exitCode,
