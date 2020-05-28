@@ -826,14 +826,6 @@ async function main() {
     console.log("runfrompackage", webAppRunFromPackage);
     console.log("enablestorage", webAppEnableStorage);
 
-    const hasCorrectImage = webAppImageName && webAppImageName.value === imageName;
-    const isAppServiceStorageEnabled = webAppEnableStorage && webAppEnableStorage === 'true';
-    if (!hasCorrectImage || !isAppServiceStorageEnabled) {
-      console.log('Configuring custom Deno runtime image...');
-      await runAzCommand([ 'webapp', 'config', 'container', 'set', '-n', appName, '-g', resourceGroup, '-i', imageName, '-r', 'https://index.docker.io', '-u', '', '-p', '', '-t', 'true' ]);
-      await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file="deno run -A --unstable server.bundle.js"' ]);
-    }
-
     const isRunFromPackageEnabled = webAppRunFromPackage && webAppRunFromPackage.value === '1';
     if (!isRunFromPackageEnabled) {
       console.log('Configuring run from package...');
@@ -842,7 +834,15 @@ async function main() {
 
     console.log('Uploading package...')
     await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
-    
+ 
+    const hasCorrectImage = webAppImageName && webAppImageName.value === imageName;
+    const isAppServiceStorageEnabled = webAppEnableStorage && webAppEnableStorage === 'true';
+    if (!hasCorrectImage || !isAppServiceStorageEnabled) {
+      console.log('Configuring custom Deno runtime image...');
+      await runAzCommand([ 'webapp', 'config', 'container', 'set', '-n', appName, '-g', resourceGroup, '-i', imageName, '-r', 'https://index.docker.io', '-u', '', '-p', '', '-t', 'true' ]);
+      await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file', 'deno run -A --unstable server.bundle.js' ]);
+    }
+
   } catch (error) {
     core.setFailed(error.message);
   }
