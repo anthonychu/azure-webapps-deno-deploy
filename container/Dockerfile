@@ -1,6 +1,6 @@
 FROM debian:stable-20200514-slim
 
-ENV DENO_VERSION=1.0.0
+ENV DENO_VERSION=1.0.2
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update \
@@ -15,13 +15,13 @@ RUN apt-get -qq update \
   && apt-get -y -qq autoremove \
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && mkdir -p /home/site/wwwroot
+  && mkdir -p /home/site/wwwroot /opt/defaultsite
 
 ENV DENO_DIR /deno-dir/
 ENV PORT 80
 EXPOSE 80
 
 WORKDIR /home/site/wwwroot
-COPY . .
+COPY . /opt/defaultsite
 
-CMD ["deno", "run", "-A", "server.ts"]
+CMD ["deno", "run", "-A", "/opt/defaultsite/server.ts"]

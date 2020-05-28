@@ -13,7 +13,6 @@ inputs:
   script-file:
     description: Path to script to pass to deno run
     required: false
-    default: server.bundle.js
 runs:
   using: node12
   main: dist/index.js

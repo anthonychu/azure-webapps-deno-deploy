@@ -34,11 +34,11 @@ async function main() {
     if (!isRunFromPackageEnabled) {
       console.log('Configuring run from package...');
       await runAzCommand([ 'webapp', 'config', 'appsettings', 'set', '-n', appName, '-g', resourceGroup, '--settings', 'WEBSITE_RUN_FROM_PACKAGE=1' ]);
-      await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file', `deno run -A --unstable "${scriptFile}"` ]);
     }
-
+    
     console.log('Uploading package...')
     await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
+    await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file', `deno run -A --unstable ${scriptFile}` ]);
 
   } catch (error) {
     core.setFailed(error.message);
@@ -57,7 +57,7 @@ async function main() {
           error += data.toString();
         }
       },
-      silent: true
+      silent: false
     };
   
     const exitCode = await exec.exec('az', [...args, '-o', 'json'], options);
