@@ -46,7 +46,7 @@ async function main() {
         break;
       } catch (ex) {
         // sometimes deployment fails transiently
-        console.error(ex);
+        console.info(ex);
         retryCount += 1;
       }
     }
