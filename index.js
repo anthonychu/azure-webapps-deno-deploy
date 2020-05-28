@@ -36,8 +36,18 @@ async function main() {
       await runAzCommand([ 'webapp', 'config', 'appsettings', 'set', '-n', appName, '-g', resourceGroup, '--settings', 'WEBSITE_RUN_FROM_PACKAGE=1' ]);
     }
     
-    console.log('Uploading package...')
-    await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
+    let retryCount = 0;
+    while (retryCount < 3) {
+      try {
+        console.log('Uploading package...')
+        await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
+        break;
+      } catch (ex) {
+        // sometimes deployment fails transiently
+        console.error(ex);
+        retryCount += 1;
+      }
+    }
     await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file', `deno run -A --unstable ${scriptFile}` ]);
 
   } catch (error) {
