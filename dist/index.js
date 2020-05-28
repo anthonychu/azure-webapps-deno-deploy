@@ -803,7 +803,6 @@ const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const exec = __webpack_require__(986);
 
-const imageName = 'anthonychu/azure-webapps-deno:latest';
 
 async function main() {
   try {
@@ -811,6 +810,9 @@ async function main() {
     const resourceGroup = core.getInput('resource-group');
     const package = core.getInput('package');
     const scriptFile = core.getInput('script-file');
+    const denoVersion = core.getInput('deno-version') || 'latest';
+
+    const imageName = `anthonychu/azure-webapps-deno:${denoVersion}`;
   
     const { output: containerInfoJson } = await runAzCommand([ 'webapp', 'config', 'container', 'show', '-n', appName, '-g', resourceGroup ]);
     const containerInfo = JSON.parse(containerInfoJson);
@@ -837,8 +839,18 @@ async function main() {
       await runAzCommand([ 'webapp', 'config', 'appsettings', 'set', '-n', appName, '-g', resourceGroup, '--settings', 'WEBSITE_RUN_FROM_PACKAGE=1' ]);
     }
     
-    console.log('Uploading package...')
-    await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
+    let retryCount = 0;
+    while (retryCount < 3) {
+      try {
+        console.log('Uploading package...')
+        await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
+        break;
+      } catch (ex) {
+        // sometimes deployment fails transiently
+        console.info(ex);
+        retryCount += 1;
+      }
+    }
     await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file', `deno run -A --unstable ${scriptFile}` ]);
 
   } catch (error) {
