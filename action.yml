@@ -8,11 +8,11 @@ inputs:
     description: Name of the resource group
     required: true
   package:
-    description: Path to zip package
+    description: Path to zip package to deploy
     required: true
   script-file:
     description: Path to script to pass to deno run
-    required: false
+    required: true
 runs:
   using: node12
   main: dist/index.js
