@@ -1,5 +1,5 @@
-name: Azure Web Apps Deno Deployment
-description: Deploy a Deno app to Azure Web Apps (Linux)
+name: Deploy Deno to Azure Web Apps
+description: Deploy a Deno 🦕 web app to Azure App Service
 inputs:
   app-name:
     description: Name of the Azure Web App
