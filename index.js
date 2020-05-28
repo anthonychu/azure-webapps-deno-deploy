@@ -2,7 +2,6 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const exec = require('@actions/exec');
 
-const imageName = 'anthonychu/azure-webapps-deno:latest';
 
 async function main() {
   try {
@@ -10,6 +9,9 @@ async function main() {
     const resourceGroup = core.getInput('resource-group');
     const package = core.getInput('package');
     const scriptFile = core.getInput('script-file');
+    const denoVersion = core.getInput('deno-version') || 'latest';
+
+    const imageName = `anthonychu/azure-webapps-deno:${denoVersion}`;
   
     const { output: containerInfoJson } = await runAzCommand([ 'webapp', 'config', 'container', 'show', '-n', appName, '-g', resourceGroup ]);
     const containerInfo = JSON.parse(containerInfoJson);

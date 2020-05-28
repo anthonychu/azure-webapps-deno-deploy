@@ -20,6 +20,10 @@ This action deploys a Deno app to Azure Web Apps (Linux).
 
 **Required** Path to the script file to pass to `deno run`.
 
+### `deno-version`
+
+**Optional** Deno version to use (default: `latest`).
+
 ## Outputs
 
 None
@@ -59,4 +63,5 @@ jobs:
         resource-group: my-resource-group
         package: app.zip
         script-file: server.bundle.js
+        deno-version: "1.0.2"
 ```

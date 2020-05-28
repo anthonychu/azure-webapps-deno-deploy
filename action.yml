@@ -13,6 +13,10 @@ inputs:
   script-file:
     description: Path to script to pass to deno run
     required: true
+  deno-version:
+    description: Version of deno to use
+    required: false
+    default: latest
 runs:
   using: node12
   main: dist/index.js
