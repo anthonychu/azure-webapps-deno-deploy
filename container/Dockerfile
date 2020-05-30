@@ -5,7 +5,7 @@ ENV DENO_VERSION=${DENO_VERSION}
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -qq update \
-  && apt-get -qq install -y --no-install-recommends curl ca-certificates unzip \
+  && apt-get -qq install -y --no-install-recommends curl ca-certificates unzip openssh-server \
   && curl -fsSL https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip \
   --output deno.zip \
   && unzip deno.zip \
@@ -16,11 +16,17 @@ RUN apt-get -qq update \
   && apt-get -y -qq autoremove \
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && mkdir -p /home/site/wwwroot /opt/defaultsite
+  && mkdir -p /home/site/wwwroot /opt/defaultsite \
+  echo "root:Docker!" | chpasswd 
 
 ENV DENO_DIR /deno-dir/
 ENV PORT 80
-EXPOSE 80
+ENV SSH_PORT 2222
+EXPOSE 80 2222
+
+COPY sshd_config /etc/ssh/
+RUN mkdir /var/run/sshd
+RUN chmod 0755 /var/run/sshd
 
 WORKDIR /home/site/wwwroot
 COPY . /opt/defaultsite
