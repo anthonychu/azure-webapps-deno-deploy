@@ -69,10 +69,10 @@ jobs:
 
 ## How it works
 
-This action configures an Azure Web App for Linux to use a custom runtime image ([anthonychu/azure-webapps-deno](https://hub.docker.com/r/anthonychu/azure-webapps-deno)) and deploys your code using [Run From Package](https://docs.microsoft.com/azure/azure-functions/run-functions-from-deployment-package).
+This action configures an Azure Web App for Linux to use a [custom runtime image](https://hub.docker.com/r/anthonychu/azure-webapps-deno) and deploys your code using [Run From Package](https://docs.microsoft.com/azure/azure-functions/run-functions-from-deployment-package).
 
 It calls the Azure CLI. Ensure your workflow first calls `azure/login`.
 
 ---
 
-*Disclaimer: This is a community open source project. No official support is provided by Microsoft.*
+*This is a community open source project. No official support is provided by Microsoft.*
