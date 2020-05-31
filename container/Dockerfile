@@ -17,7 +17,10 @@ RUN apt-get -qq update \
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && mkdir -p /home/site/wwwroot /opt/defaultsite \
-  echo "root:Docker!" | chpasswd 
+  && echo "root:Docker!" | chpasswd \
+  && rm -f /etc/ssh/sshd_config \
+  && mkdir -p /var/run/sshd \
+  && chmod 0755 /var/run/sshd
 
 ENV DENO_DIR /deno-dir/
 ENV PORT 80
@@ -25,8 +28,6 @@ ENV SSH_PORT 2222
 EXPOSE 80 2222
 
 COPY sshd_config /etc/ssh/
-RUN mkdir /var/run/sshd
-RUN chmod 0755 /var/run/sshd
 
 WORKDIR /home/site/wwwroot
 COPY . /opt/defaultsite
