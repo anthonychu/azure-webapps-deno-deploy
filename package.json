@@ -12,7 +12,8 @@
   "dependencies": {
     "@actions/core": "^1.2.4",
     "@actions/exec": "^1.0.4",
-    "@actions/github": "^2.2.0"
+    "@actions/github": "^2.2.0",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3"
