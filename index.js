@@ -14,7 +14,7 @@ async function main() {
     const tags = await getImageTags();
     if (!tags.includes(denoVersion)) {
       core.error(`${denoVersion} is not valid.`);
-      core.info('Please use one of the following versions: \n');
+      core.info('Please use one of the following versions:');
       core.info(tags.sort().join('\n'));
       core.setFailed();
       return;
