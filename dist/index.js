@@ -802,7 +802,7 @@ module.exports = require("os");
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const exec = __webpack_require__(986);
-
+const fetch = __webpack_require__(454);
 
 async function main() {
   try {
@@ -811,6 +811,15 @@ async function main() {
     const package = core.getInput('package');
     const scriptFile = core.getInput('script-file');
     const denoVersion = core.getInput('deno-version') || 'latest';
+
+    const tags = await getImageTags();
+    if (!tags.includes(denoVersion)) {
+      core.error(`${denoVersion} is not valid.`);
+      core.info('Please use one of the following versions: \n');
+      core.info(tags.sort().join('\n'));
+      core.setFailed();
+      return;
+    }
 
     const imageName = `anthonychu/azure-webapps-deno:${denoVersion}`;
   
@@ -828,26 +837,26 @@ async function main() {
     const hasCorrectImage = webAppImageName && webAppImageName.value === imageName;
     const isAppServiceStorageEnabled = webAppEnableStorage && webAppEnableStorage === 'true';
     if (!hasCorrectImage || !isAppServiceStorageEnabled) {
-      console.log('Configuring custom Deno runtime image...');
+      core.info('Configuring custom Deno runtime image...');
       await runAzCommand([ 'webapp', 'config', 'container', 'set', '-n', appName, '-g', resourceGroup, '-i', imageName, '-r', 'https://index.docker.io', '-u', '', '-p', '', '-t', 'true' ]);
       await runAzCommand([ 'webapp', 'config', 'set', '-n', appName, '-g', resourceGroup, '--startup-file', '' ]);
     }
 
     const isRunFromPackageEnabled = webAppRunFromPackage && webAppRunFromPackage.value === '1';
     if (!isRunFromPackageEnabled) {
-      console.log('Configuring run from package...');
+      core.info('Configuring run from package...');
       await runAzCommand([ 'webapp', 'config', 'appsettings', 'set', '-n', appName, '-g', resourceGroup, '--settings', 'WEBSITE_RUN_FROM_PACKAGE=1' ]);
     }
     
     let retryCount = 0;
     while (retryCount < 3) {
       try {
-        console.log('Uploading package...')
+        core.info('Uploading package...')
         await runAzCommand([ 'webapp', 'deployment', 'source', 'config-zip', '-n', appName, '-g', resourceGroup, '--src', package ]);
         break;
       } catch (ex) {
         // sometimes deployment fails transiently
-        console.info(ex);
+        core.error(ex);
         retryCount += 1;
       }
     }
@@ -880,6 +889,20 @@ async function main() {
       output,
       error
     };
+  }
+
+  async function getImageTags() {
+    const tags = [];
+    let url = 'https://registry.hub.docker.com/v2/repositories/anthonychu/azure-webapps-deno/tags';
+    while(true) {
+      const resp = await fetch(url);
+      const { next, results } = await resp.json();
+      tags.push(...(results.map(r => r.name)));
+      if (!next) {
+        return tags;
+      }
+      url = next;
+    }
   }
 }
 

@@ -1,0 +1,2 @@
+docker build --build-arg DENO_VERSION=1.0.4 -t anthonychu/azure-webapps-deno:1.0.4 .
+npm run build
