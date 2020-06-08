@@ -16,6 +16,8 @@ async function main() {
       core.error(`${denoVersion} is not valid.`);
       core.info('Please use one of the following versions: \n');
       core.info(tags.sort().join('\n'));
+      core.setFailed();
+      return;
     }
 
     const imageName = `anthonychu/azure-webapps-deno:${denoVersion}`;
