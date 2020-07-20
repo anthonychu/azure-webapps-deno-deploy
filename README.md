@@ -52,7 +52,7 @@ jobs:
     - name: Set up Deno
       uses: denolib/setup-deno@master
       with:
-        deno-version: "1.1.3"
+        deno-version: "1.2.0"
 
     - name: Bundle and zip Deno app
       run: |
@@ -66,7 +66,7 @@ jobs:
         resource-group: my-resource-group
         package: app.zip
         script-file: server.bundle.js
-        deno-version: "1.1.3"
+        deno-version: "1.2.0"
 ```
 
 ## How it works
