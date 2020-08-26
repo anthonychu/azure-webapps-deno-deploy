@@ -31,7 +31,7 @@ jobs:
         path: container
     
     - name: Push latest tag
-      if: ${{ github.event.inputs.pushLatest }}
+      if: github.event.inputs.pushLatest
       uses: docker/build-push-action@v1
       with:
         username: anthonychu
