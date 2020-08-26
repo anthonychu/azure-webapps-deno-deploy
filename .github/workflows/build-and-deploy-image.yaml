@@ -28,16 +28,18 @@ jobs:
         username: anthonychu
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         repository: anthonychu/azure-webapps-deno
+        build_args: DENO_VERSION=${{ github.event.inputs.denoVersion }}
         tags: ${{ github.event.inputs.denoVersion }}
         path: container
     
     - name: Push latest tag
-      if: github.event.inputs.pushLatest
+      if: github.event.inputs.pushLatest == 'true'
       uses: docker/build-push-action@v1
       with:
         username: anthonychu
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         repository: anthonychu/azure-webapps-deno
+        build_args: DENO_VERSION=${{ github.event.inputs.denoVersion }}
         tags: latest
         path: container
     
