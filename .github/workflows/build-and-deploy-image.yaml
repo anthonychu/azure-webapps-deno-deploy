@@ -14,6 +14,7 @@ on:
 
 jobs:
   buildAndPush:
+    name: Build and push Deno ${{ github.event.inputs.denoVersion }}
     runs-on: ubuntu-latest
 
     steps:
