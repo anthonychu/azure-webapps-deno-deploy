@@ -1,0 +1,41 @@
+on: 
+  workflow_dispatch:
+    inputs:
+      denoVersion:
+        description: 'Deno Version'     
+        required: true
+      pushLatest:
+        description: 'Also push latest'
+        required: true
+        default: 'false'
+
+jobs:
+  buildAndPush:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: container
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v1
+      with:
+        username: anthonychu
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        repository: anthonychu/azure-webapps-deno
+        tags: ${{ github.event.inputs.denoVersion }}
+    
+    - name: Push latest tag
+      if: ${{ github.event.inputs.pushLatest }}
+      uses: docker/build-push-action@v1
+      with:
+        username: anthonychu
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        repository: anthonychu/azure-webapps-deno
+        tags: latest
+    
+    
