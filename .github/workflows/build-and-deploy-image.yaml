@@ -15,9 +15,6 @@ on:
 jobs:
   buildAndPush:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: container
 
     steps:
 
@@ -31,6 +28,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         repository: anthonychu/azure-webapps-deno
         tags: ${{ github.event.inputs.denoVersion }}
+        path: container
     
     - name: Push latest tag
       if: ${{ github.event.inputs.pushLatest }}
@@ -40,5 +38,5 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
         repository: anthonychu/azure-webapps-deno
         tags: latest
-    
+        path: container
     
